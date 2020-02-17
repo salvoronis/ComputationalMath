@@ -30,12 +30,6 @@ public class FixedPointIteration {
 				System.out.println();
 			}
 			System.out.println("Повторная проверка. Результат: " + check(system, max));
-			for(double[] opa : system){
-				for(double apo : opa){
-					System.out.print(apo+" ");
-				}
-				System.out.println();
-			}
 			System.out.println();
 		}
 		answer(system, max);
@@ -92,12 +86,15 @@ public class FixedPointIteration {
 			}
 		}
 		double[] answers = new double[max-1];
+		double[] copy = new double[max-1];
 		System.out.printf("%d круг ада\n", 0);
 		for (int i = 0;i<max-1;i++){
 			answers[i] = system[i][max-1];
 			System.out.print(answers[i]+" ");
 		}
 		System.out.println();
+
+
 		for (int k = 1;k<6;k++) {
 			System.out.printf("%d круг ада\n", k);
 			for (int i = 0;i<max-1;i++) {
@@ -105,13 +102,20 @@ public class FixedPointIteration {
 				for (int j = 1;j<max-1;j++){
 					if(j<=i){
 						sum += system[i][j]*Math.pow(answers[j-1],k);
+						//System.out.printf("%f*%f^%d+",system[i][j],answers[j-1], k);
 					} else {
 						sum += system[i][j]*Math.pow(answers[j],k);
+						//System.out.printf("%f*%f^%d+",system[i][j], answers[j], k);
 					}
 				}
+				//System.out.println();
 				sum += system[i][max-1];
 				sum = Math.pow(sum, 1/k);
-				System.out.printf("%.4f ",sum);
+				copy[i] = sum;
+				System.out.printf("%f ",sum);
+			}
+			for (int i = 0;i<max-1;i++) {
+				answers[i] = copy[i];
 			}
 			System.out.println();
 		}
