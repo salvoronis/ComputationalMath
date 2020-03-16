@@ -3,12 +3,15 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
 
 public class Solution {
 	private int size;
 	private double[][] matrix;
 	private double eps;
 	PrintWriter printWriter = new PrintWriter(System.out);
+	ArrayList<Double> errorList = new ArrayList<Double>();
 
 	public static void main(String[] args) {
 		Solution fixedPointIteration = new Solution();
@@ -62,7 +65,7 @@ public class Solution {
 		int diag = 0;
 		int other = 0;
 		boolean ok = true;
-		System.out.println("Проверка условия преобладания диагональных элементов");
+		System.out.print("Checking the condition: ");
 		for (int i = 0; i<size; i++){
 			diag+=matrix[i][i];
 			for(int j = 0; j<size; j++){
@@ -72,15 +75,17 @@ public class Solution {
 			if(diag < other){
 				ok = false;
 			}
-			System.out.printf("%d > %d\n", diag, other);
 			diag = 0;
 			other = 0;
 		}
+		System.out.println(ok);
 		return ok;
 	}
 
 	private void readFile() throws FileNotFoundException{
-		Scanner in = new Scanner(new File("sole"));
+		System.out.print("File name: ");
+		Scanner in = new Scanner(System.in);
+		in = new Scanner(new File(in.nextLine()));
 		size = in.nextInt();
 		matrix = new double[size][size + 1];
 		eps = in.nextDouble();
@@ -127,41 +132,33 @@ public class Solution {
 			previousVariableValues[i] = 0.0;
 		}
 		while (true) {
-			// Введем вектор значений неизвестных на текущем шаге 
 			double[] currentVariableValues = new double[size];
-			// Посчитаем значения неизвестных на текущей итерации 
-			// в соответствии с теоретическими формулами 
 			for (int i = 0; i < size; i++) {
-				// Инициализируем i-ую неизвестную значением 
-				// свободного члена i-ой строки матрицы 
 				currentVariableValues[i] = matrix[i][size];
-				// Вычитаем сумму по всем отличным от i-ой неизвестным 
 				for (int j = 0; j < size; j++) {
 					if (i != j) {
 						currentVariableValues[i] -= matrix[i][j] * previousVariableValues[j];
 					}
 				}
-				// Делим на коэффициент при i-ой неизвестной 
 				currentVariableValues[i] /= matrix[i][i];
 			}
-			// Посчитаем текущую погрешность относительно предыдущей итерации 
 			double error = 0.0; 
 			for (int i = 0; i < size; i++) {
 				error += Math.abs(currentVariableValues[i] - previousVariableValues[i]);
 			}
-			// Если необходимая точность достигнута, то завершаем процесс 
+			errorList.add(error);
 			if (error < eps) { break; }
-			// Переходим к следующей итерации, так 
-			// что текущие значения неизвестных 
-			// становятся значениями на предыдущей итерации 
 			previousVariableValues = currentVariableValues; 
 		}
-		// Выводим найденные значения неизвестных 
+		printWriter.print("Result:"+"\n");
 		for (int i = 0; i < size; i++) { 
-			printWriter.print("Variable "+(i+1)+" "+previousVariableValues[i] + "\n"); 
-		} 
-		// После выполнения программы необходимо закрыть 
-		// потоки ввода и вывода  
+			printWriter.print("Variable "+(i+1)+" = "+previousVariableValues[i]+"±"+eps+"\n");
+		}
+		printWriter.print(errorList.size()+" iterations"+"\n");
+		printWriter.print("Error list"+"\n");
+		for (int i = 0; i < errorList.size(); i++) {
+			printWriter.print(errorList.get(i)+"\n");
+		}
 		printWriter.close(); 
 	}
 }
