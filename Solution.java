@@ -4,11 +4,14 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+
 
 
 public class Solution {
 	private int size;
 	private double[][] matrix;
+	//user's error
 	private double eps;
 	PrintWriter printWriter = new PrintWriter(System.out);
 	ArrayList<Double> errorList = new ArrayList<Double>();
@@ -17,7 +20,7 @@ public class Solution {
 		Solution fixedPointIteration = new Solution();
 		Scanner question;
 		while (true){
-			System.out.println("console/file");
+			System.out.print("console/file: ");
 			question = new Scanner(System.in);
 			String choice = question.nextLine();
 			if (choice.equals("console")){
@@ -28,7 +31,7 @@ public class Solution {
 					fixedPointIteration.readFile();
 					break;
 				} catch(FileNotFoundException exc){
-					System.out.println("can not read file.");
+					System.out.println("Can not read file.");
 					System.exit(0);
 				}
 			} else {
@@ -38,10 +41,14 @@ public class Solution {
 		question.close();
 		if (!fixedPointIteration.check()) {
 			fixedPointIteration.shuffle();
+			if (!fixedPointIteration.check()){
+				System.exit(0);
+			}
 		}
 		fixedPointIteration.solve();
 	}
 
+	//make matrix satisfy the diagonal condition
 	private void shuffle(){
 		System.out.println("shuffle the matrix");
 		double[][] good = new double[size][size+1];
@@ -61,6 +68,7 @@ public class Solution {
 		matrix = good;
 	}
 
+	//make sure that the matrix satisfy the diagonal condition
 	public boolean check(){
 		int diag = 0;
 		int other = 0;
@@ -82,6 +90,7 @@ public class Solution {
 		return ok;
 	}
 
+	//read data from file
 	private void readFile() throws FileNotFoundException{
 		System.out.print("File name: ");
 		Scanner in = new Scanner(System.in);
@@ -102,6 +111,7 @@ public class Solution {
 		in.close();
 	}
 
+	//read data from console
 	private void consoleWrite(){
 		Scanner scanner = new Scanner(System.in);
 		scanner.useLocale(new Locale("Russian"));
@@ -126,11 +136,13 @@ public class Solution {
 		scanner.close();
 	}
 
+	//solve the System of linear equations
 	private void solve(){
 		double[] previousVariableValues = new double[size];
 		for (int i = 0; i < size; i++) {
 			previousVariableValues[i] = 0.0;
 		}
+		double error;
 		while (true) {
 			double[] currentVariableValues = new double[size];
 			for (int i = 0; i < size; i++) {
@@ -142,17 +154,22 @@ public class Solution {
 				}
 				currentVariableValues[i] /= matrix[i][i];
 			}
-			double error = 0.0; 
+			error = 0.0;
+			ArrayList<Double> errors = new ArrayList<Double>();
 			for (int i = 0; i < size; i++) {
-				error += Math.abs(currentVariableValues[i] - previousVariableValues[i]);
+				errors.add(Math.abs(currentVariableValues[i] -
+				 previousVariableValues[i]));
 			}
+			error = Collections.max(errors);
 			errorList.add(error);
 			if (error < eps) { break; }
 			previousVariableValues = currentVariableValues; 
 		}
 		printWriter.print("Result:"+"\n");
 		for (int i = 0; i < size; i++) { 
-			printWriter.print("Variable "+(i+1)+" = "+previousVariableValues[i]+"±"+eps+"\n");
+			printWriter.print("Variable "+(i+1)+" = "+
+				previousVariableValues[i]+"±"
+				+error+"\n");
 		}
 		printWriter.print(errorList.size()+" iterations"+"\n");
 		printWriter.print("Error list"+"\n");
@@ -162,17 +179,3 @@ public class Solution {
 		printWriter.close(); 
 	}
 }
-/*3
-10
-1
-1
-12
-2
-10
-1
-13
-2
-2
-10
-14
-0.0027*/
