@@ -31,7 +31,7 @@ public class Solution {
 					fixedPointIteration.readFile();
 					break;
 				} catch(FileNotFoundException exc){
-					System.out.println("Can not read file.");
+					System.out.println("File not found.");
 					System.exit(0);
 				}
 			} else {
@@ -50,32 +50,30 @@ public class Solution {
 
 	//make matrix satisfy the diagonal condition
 	private void shuffle(){
-		System.out.println("shuffle the matrix");
-		double[][] good = new double[size][size+1];
-		for(int i = 0; i<size; i++){
-			double maxi = 0;
-			int num = 0;
-			for (int j = 0;j<size;j++){
-				if (matrix[i][j] > maxi){
-					maxi = matrix[i][j];
-					num = j;
-				}
-			}
-			good[num] = matrix[i];
-			maxi = 0;
-			num = 0;
-		}
-		matrix = good;
+        double[][] good = new double[size][size+1];
+        for(int i = 0; i<size; i++){
+            double maxi = 0;
+            int num = 0;
+            for (int j = 0;j<size;j++){
+                if (matrix[i][j] > maxi){
+                    maxi = matrix[i][j];
+                    num = j;
+                }
+            }
+            good[num] = matrix[i];
+            maxi = 0;
+            num = 0;
+        }
+        matrix = good;
 	}
 
 	//make sure that the matrix satisfy the diagonal condition
 	public boolean check(){
-		int diag = 0;
-		int other = 0;
+		double diag = 0;
+		double other = 0;
 		boolean ok = true;
-		System.out.print("Checking the condition: ");
 		for (int i = 0; i<size; i++){
-			diag+=matrix[i][i];
+			diag =matrix[i][i];
 			for(int j = 0; j<size; j++){
 				other+=matrix[i][j];
 			}
@@ -86,7 +84,6 @@ public class Solution {
 			diag = 0;
 			other = 0;
 		}
-		System.out.println(ok);
 		return ok;
 	}
 
@@ -116,8 +113,12 @@ public class Solution {
 		Scanner scanner = new Scanner(System.in);
 		scanner.useLocale(new Locale("Russian"));
 
-		System.out.println("Input main matrix size");
-		size = scanner.nextInt();
+		while(true){
+			System.out.println("Input main matrix size");
+			size = scanner.nextInt();
+			if (size >= 1) {break;}
+			System.out.println("Incorect size");
+		}
 
 		matrix = new double[size][size + 1];
 
@@ -138,6 +139,10 @@ public class Solution {
 
 	//solve the System of linear equations
 	private void solve(){
+		if (eps <= 0){
+			System.out.println("Incorrect accuracy");
+			System.exit(0);
+		}
 		double[] previousVariableValues = new double[size];
 		for (int i = 0; i < size; i++) {
 			previousVariableValues[i] = 0.0;
@@ -167,15 +172,13 @@ public class Solution {
 		}
 		printWriter.print("Result:"+"\n");
 		for (int i = 0; i < size; i++) { 
-			printWriter.print("Variable "+(i+1)+" = "+
+			printWriter.print("x"+(i+1)+" = "+
 				previousVariableValues[i]+"±"
 				+error+"\n");
 		}
 		printWriter.print(errorList.size()+" iterations"+"\n");
-		printWriter.print("Error list"+"\n");
-		for (int i = 0; i < errorList.size(); i++) {
-			printWriter.print(errorList.get(i)+"\n");
-		}
+		printWriter.print("Error: ");
+        printWriter.print(errorList.get(errorList.size()-1)+"\n");
 		printWriter.close(); 
 	}
 }
