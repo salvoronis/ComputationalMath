@@ -42,6 +42,7 @@ public class Solution {
 		if (!fixedPointIteration.check()) {
 			fixedPointIteration.shuffle();
 			if (!fixedPointIteration.check()){
+				System.out.println("incorrect matrix");
 				System.exit(0);
 			}
 		}
@@ -50,6 +51,7 @@ public class Solution {
 
 	//make matrix satisfy the diagonal condition
 	private void shuffle(){
+		ArrayList<Integer> positions = new ArrayList<Integer>();
         double[][] good = new double[size][size+1];
         for(int i = 0; i<size; i++){
             double maxi = 0;
@@ -60,7 +62,12 @@ public class Solution {
                     num = j;
                 }
             }
+            if (positions.contains(num)) {
+            	System.out.println("incorrect matrix");
+				System.exit(0);
+            }
             good[num] = matrix[i];
+            positions.add(num);
             maxi = 0;
             num = 0;
         }
@@ -123,15 +130,11 @@ public class Solution {
 		matrix = new double[size][size + 1];
 
 		System.out.println("Input matrix " + (size*size+size) +" numbers");
-		String output = "Matrix:\n";
 		for (int i = 0; i < size; i++) { 
 			for (int j = 0; j < size + 1; j++) {
 				matrix[i][j] = scanner.nextDouble();
-				output += matrix[i][j] + " ";
 			}
-			output += "\n";
 		}
-		System.out.print(output);
 		System.out.println("Input accuracy");
 		eps = scanner.nextDouble();
 		scanner.close();
@@ -177,8 +180,11 @@ public class Solution {
 				+error+"\n");
 		}
 		printWriter.print(errorList.size()+" iterations"+"\n");
-		printWriter.print("Error: ");
-        printWriter.print(errorList.get(errorList.size()-1)+"\n");
+		printWriter.print("Error vector: \n");
+        //printWriter.print(errorList.get(errorList.size()-1)+"\n");
+        for (int i = 0; i < errorList.size(); i++) {
+			printWriter.print(errorList.get(i)+"\n");
+		}
 		printWriter.close(); 
 	}
 }
