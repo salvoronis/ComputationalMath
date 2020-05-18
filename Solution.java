@@ -31,8 +31,7 @@ public class Solution {
 					fixedPointIteration.readFile();
 					break;
 				} catch(FileNotFoundException exc){
-					System.out.println("File not found.");
-					System.exit(0);
+					System.out.println(exc);
 				}
 			} else {
 				System.out.println("please write console or file");
