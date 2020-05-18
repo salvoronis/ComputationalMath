@@ -39,26 +39,26 @@ public class Solution {
 			}
 		}
 		question.close();
-		if (!fixedPointIteration.check()) {
+		if (!fixedPointIteration.isDiagCond()) {
 			try{
-				fixedPointIteration.shuffle();
+				fixedPointIteration.MatrixToDiagCond();
 			}catch(IncorrectMatrixException e){
 				System.out.println(e);
 			}
-			if (!fixedPointIteration.check()){
+			if (!fixedPointIteration.isDiagCond()){
 				System.out.println("There are no diagonal condition");
 				System.exit(0);
 			}
 		}
 		try{
-			fixedPointIteration.solve();
+			fixedPointIteration.solveByFixedPoint();
 		}catch(AccuracyException e){
 			System.out.println(e);
 		}
 	}
 
 	//make matrix satisfy the diagonal condition
-	private void shuffle() throws IncorrectMatrixException{
+	private void MatrixToDiagCond() throws IncorrectMatrixException{
 		ArrayList<Integer> positions = new ArrayList<Integer>();
         double[][] good = new double[size][size+1];
         for(int i = 0; i<size; i++){
@@ -82,7 +82,7 @@ public class Solution {
 	}
 
 	//make sure that the matrix satisfy the diagonal condition
-	public boolean check(){
+	public boolean isDiagCond(){
 		double diag = 0;
 		double other = 0;
 		boolean ok = true;
@@ -148,7 +148,7 @@ public class Solution {
 	}
 
 	//solve the System of linear equations
-	private void solve() throws AccuracyException{
+	private void solveByFixedPoint() throws AccuracyException{
 		if (eps <= 0){
 			throw new AccuracyException();
 		}
