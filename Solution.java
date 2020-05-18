@@ -40,17 +40,25 @@ public class Solution {
 		}
 		question.close();
 		if (!fixedPointIteration.check()) {
-			fixedPointIteration.shuffle();
+			try{
+				fixedPointIteration.shuffle();
+			}catch(IncorrectMatrixException e){
+				System.out.println(e);
+			}
 			if (!fixedPointIteration.check()){
-				System.out.println("incorrect matrix");
+				System.out.println("There are no diagonal condition");
 				System.exit(0);
 			}
 		}
-		fixedPointIteration.solve();
+		try{
+			fixedPointIteration.solve();
+		}catch(AccuracyException e){
+			System.out.println(e);
+		}
 	}
 
 	//make matrix satisfy the diagonal condition
-	private void shuffle(){
+	private void shuffle() throws IncorrectMatrixException{
 		ArrayList<Integer> positions = new ArrayList<Integer>();
         double[][] good = new double[size][size+1];
         for(int i = 0; i<size; i++){
@@ -63,8 +71,7 @@ public class Solution {
                 }
             }
             if (positions.contains(num)) {
-            	System.out.println("incorrect matrix");
-				System.exit(0);
+				throw new IncorrectMatrixException("Incorrect matrix");
             }
             good[num] = matrix[i];
             positions.add(num);
@@ -141,10 +148,9 @@ public class Solution {
 	}
 
 	//solve the System of linear equations
-	private void solve(){
+	private void solve() throws AccuracyException{
 		if (eps <= 0){
-			System.out.println("Incorrect accuracy");
-			System.exit(0);
+			throw new AccuracyException();
 		}
 		double[] previousVariableValues = new double[size];
 		for (int i = 0; i < size; i++) {
@@ -173,6 +179,10 @@ public class Solution {
 			if (error < eps) { break; }
 			previousVariableValues = currentVariableValues; 
 		}
+		announceResults(previousVariableValues, error);
+	}
+
+	private void announceResults(double[] previousVariableValues, double error){
 		printWriter.print("Result:"+"\n");
 		for (int i = 0; i < size; i++) { 
 			printWriter.print("x"+(i+1)+" = "+
@@ -181,7 +191,6 @@ public class Solution {
 		}
 		printWriter.print(errorList.size()+" iterations"+"\n");
 		printWriter.print("Error vector: \n");
-        //printWriter.print(errorList.get(errorList.size()-1)+"\n");
         for (int i = 0; i < errorList.size(); i++) {
 			printWriter.print(errorList.get(i)+"\n");
 		}
